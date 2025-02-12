@@ -1,2 +1,5 @@
 modules/library/trytond_training.egg-info
 **.pyc
+modules/library_borrow/trytond_training.egg-info
+modules/library_borrow/trytond_training_override.egg-info
+.vscode

@@ -8,5 +8,6 @@ def register():
         library.User,
         library.Checkout, 
         library.Exemplary,
+        library.Book,
         module="library_borrow", type_="model"
     )
