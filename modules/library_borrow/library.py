@@ -32,7 +32,8 @@ class User(ModelView, ModelSQL):
     
     name = fields.Char('Name', required=True)
     registration_date = fields.Date('Registration Date', help='The date at '
-        'which the user registered in the library')
+        'which the user registered in the library', 
+        domain=[("registration_date", "<=", datetime.date.today())]) 
     borrowed_book = checkouts = fields.One2Many('library.user.checkout', 'user', 'Checkouts')
     checkedout_books = fields.Function(
         fields.Integer('Checked-out books', help='The number of books a user '
@@ -114,8 +115,11 @@ class Checkout(ModelSQL, ModelView):
         ondelete='CASCADE', select=True)
     exemplary = fields.Many2One('library.book.exemplary', 'Exemplary',
         required=True, ondelete='CASCADE', select=True)
-    date = fields.Date('Date', required=True)
-    return_date = fields.Date('Return Date')
+    date = fields.Date('Date', required=True, 
+        domain=[("date", "<=", datetime.date.today())])
+    return_date = fields.Date('Return Date', 
+        domain=[("return_date", "<=", datetime.date.today()), 
+            ("return_date", ">=", Eval("date", datetime.date.today()))])
     expected_return_date = fields.Function(
         fields.Date('Expected return date', help='The date at which the '
             'exemplary is supposed to be returned', readonly=True),
