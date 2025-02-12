@@ -24,7 +24,7 @@ __all__ = [
     ]
 
 # TODO out 
-#debugpy.listen(("localhost", 5678))
+# debugpy.listen(("localhost", 5678))
 
 class User(ModelView, ModelSQL):
     'User'
@@ -118,8 +118,10 @@ class Checkout(ModelSQL, ModelView):
     date = fields.Date('Date', required=True, 
         domain=[("date", "<=", datetime.date.today())])
     return_date = fields.Date('Return Date', 
-        domain=[("return_date", "<=", datetime.date.today()), 
-            ("return_date", ">=", Eval("date", datetime.date.today()))])
+        domain=['OR',
+            [("return_date", "=", None)],
+            [("return_date", "<=", datetime.date.today()),
+                ("return_date", ">=", Eval("date", datetime.date.today()))],])   
     expected_return_date = fields.Function(
         fields.Date('Expected return date', help='The date at which the '
             'exemplary is supposed to be returned', readonly=True),

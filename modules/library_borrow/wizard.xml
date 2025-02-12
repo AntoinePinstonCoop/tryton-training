@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<tryton>
+    <data>
+    <!-- ################ -->
+    <!-- # Borrow Books # -->
+    <!-- ################ -->
+    <record model= "ir.action.wizard" id="act_borrow_books">
+        <field name="name">Borrow books</field>
+        <field name="wiz_name">library.checkout.borrow_book</field>
+    </record>
+    <record model="ir.action.keyword" id="act_borrow_books_from_book_keyword">
+        <field name="keyword">form_action</field>
+        <field name="model">library.book,-1</field>
+        <field name="action" ref="act_borrow_books"/>
+    </record>
+    <record model="ir.action.keyword" id="act_borrow_books_from_user_keyword">
+        <field name="keyword">form_action</field>
+        <field name="model">library.user,-1</field>
+        <field name="action" ref="act_borrow_books"/>
+    </record>
+    <!-- ###################### -->
+    <!-- # Create Choose Book # -->
+    <!-- ###################### -->
+    <record model="ir.ui.view" id="checkout_book_view_form">
+        <field name="model">library.checkout.borrow_book.choose_book</field>
+        <field name="type">form</field>
+        <field name="name">checkout_book_form</field>
+    </record>
+    <!-- ################ -->
+    <!-- # Return Books # -->
+    <!-- ################ -->
+    <record model= "ir.action.wizard" id="act_return_books">
+        <field name="name">Return books</field>
+        <field name="wiz_name">library.checkout.return_book</field>
+    </record>
+    <record model="ir.action.keyword" id="act_return_books_from_checkout_keyword">
+        <field name="keyword">form_action</field>
+        <field name="model">library.user.checkout,-1</field>
+        <field name="action" ref="act_return_books"/>
+    </record>
+    <record model="ir.action.keyword" id="act_return_books_from_user_keyword">
+        <field name="keyword">form_action</field>
+        <field name="model">library.user,-1</field>
+        <field name="action" ref="act_return_books"/>
+    </record>
+    <!-- #################### -->
+    <!-- # Return Book Form # -->
+    <!-- #################### -->
+    <record model="ir.ui.view" id="return_book_view_form">
+        <field name="model">library.checkout.return_book.choose_return_book</field>
+        <field name="type">form</field>
+        <field name="name">return_book_form</field>
+    </record>
+    </data>
+</tryton>

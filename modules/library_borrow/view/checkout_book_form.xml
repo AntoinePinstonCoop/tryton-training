@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<form col="6">
+    <label name="user"/>
+    <field name="user"/>
+    <label name="borrow_date"/>
+    <field name="borrow_date"/>
+    <label name="expected_return_date"/>
+    <field name="expected_return_date"/>
+    <field name="books" colspan="6"/>
+</form>
