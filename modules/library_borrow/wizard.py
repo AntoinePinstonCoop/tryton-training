@@ -3,7 +3,7 @@ import datetime
 from sql import Null
 
 from trytond.pool import Pool
-from trytond.pyson import PYSONEncoder
+from trytond.pyson import PYSONEncoder, Eval
 from trytond.transaction import Transaction
 from trytond.model import ModelView, fields
 from trytond.wizard import Wizard, StateView, StateTransition, StateAction
@@ -141,12 +141,7 @@ class ReturnBook(Wizard):
         cls._error_messages.update({
             'invalid_model': (
                 'This action should be started from a book or an user'
-                ),
-            'invalid_date': 'You cannot checkout books in the future',
-            'not_available': (
-                'One of the selected books are not available for booking'
-                ),
-        })
+                ), })
 
     def default_choose_return_book(self, name):
         active_model = Transaction().context.get('active_model', '')
@@ -169,24 +164,29 @@ class ReturnBook(Wizard):
             for checkout_id, in cursor.fetchall():
                 user_checkout.append(checkout_id)
             return {
-                'return_date': datetime.date.today(),
+                'user': user,
                 'checkouts': user_checkout,
+                'return_date': datetime.date.today(),
                 }
         else:
             self.raise_user_error('invalid_model')
 
     def transition_return_book(self):
         for checkout in self.choose_return_book.checkouts:
-            setattr(checkout, "return_date",
-                self.choose_return_book.return_date)
+            if checkout.return_date is None:
+                setattr(checkout, "return_date",
+                    self.choose_return_book.return_date)
             checkout.save()
         return 'end'
 
 
 class ChooseReturningBook(ModelView):
     "Choose returning books"
+
     __name__ = "library.checkout.return_book.choose_return_book"
 
+    user = fields.Many2One('library.user', 'User', required=True)
     checkouts = fields.Many2Many('library.user.checkout', None, None,
-        "Books to return")
-    return_date = fields.Date("Return date", "", required=True)
+        "Books to return", domain=[('user', '=', Eval('user'))])
+    return_date = fields.Date("Return date", "", required=True,
+        domain=[('return_date', '<=', datetime.date.today())])

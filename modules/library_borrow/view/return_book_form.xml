@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
 <form>
+    <label name="user"/>
+    <field name="user"/>
     <label name="return_date"/>
     <field name="return_date"/>
     <field name="checkouts" colspan="4"/>
