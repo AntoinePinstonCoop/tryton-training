@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<form>
+    <label name="date"/>
+    <field name="date"/>
+    <label name="expected_out_quarantine"/>
+    <field name="expected_out_quarantine"/>
+    <label name="exemplary"/>
+    <field name="exemplary"/>
+</form>

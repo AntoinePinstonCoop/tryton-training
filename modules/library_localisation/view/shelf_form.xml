@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<form col="6">
+    <label name="name"/>
+    <field name="name"/>
+    <label name="room"/>
+    <field name="room"/>
+    <label name="is_store"/>
+    <field name="is_store"/>
+    <field name="exemplaries" colspan="6"/>
+</form>

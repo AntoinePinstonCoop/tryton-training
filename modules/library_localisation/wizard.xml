@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<tryton>
+    <data>
+        <!-- ################### -->
+        <!-- # Safe Quarantine # -->
+        <!-- ################### -->
+        <record model="ir.action.wizard" id="act_safe_quarantine">
+            <field name="name">Safe From Quarantine</field>
+            <field name="wiz_name">library.localisation.quarantine.safe</field>
+        </record>
+        <record model="ir.action.keyword" id="act_create_exemplaries_keyword">
+            <field name="keyword">form_action</field>
+            <field name="model">library.localisation.quarantine,-1</field>
+            <field name="action" ref="act_safe_quarantine"/>
+        </record>
+        <!-- ################################# -->
+        <!-- # Choose Safe Quarantine # -->
+        <!-- ################################# -->
+        <record model="ir.ui.view" id="safe_quarantine_view_form">
+            <field name="model">library.localisation.quarantine.safe.choose_quarantine</field>
+            <field name="type">form</field>
+            <field name="name">safe_quarantine_form</field>
+        </record>
+    </data>
+</tryton>   

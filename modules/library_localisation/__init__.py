@@ -1,0 +1,19 @@
+from trytond.pool import Pool
+
+from . import library
+from . import wizard
+
+def register():
+    Pool.register(
+        library.Room,
+        library.Shelf,
+        library.ShelfExemplaryRelation,
+        library.Quarantine,
+        library.Book,
+        library.Exemplary,
+        wizard.SelectSafeQuarantine,
+        module='library_localisation', type_='model')
+
+    Pool.register(
+        wizard.SafeFromQuarantine,
+        module='library_localisation', type_='wizard')
