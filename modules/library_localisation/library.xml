@@ -60,7 +60,7 @@
         <field name="view" ref="exemplary_view_form"/>
         <field name="act_window" ref="act_open_exemplary"/>
     </record>
-    <menuitem parent="menu_library_localisation" sequence="-1" action="act_open_exemplary" id="menu_open_exemplary"/>
+    <menuitem parent="menu_library_localisation" sequence="0" action="act_open_exemplary" id="menu_open_exemplary"/>
     <!-- ######## -->
     <!-- # Shelf # -->
     <!-- ######### -->
