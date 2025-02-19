@@ -1,6 +1,6 @@
 import datetime
 
-from trytond.pool import Pool
+from trytond.pool import Pool, PoolMeta
 from trytond.model import ModelView, fields
 from trytond.transaction import Transaction
 from trytond.wizard import Wizard, StateView, StateTransition, StateAction
@@ -10,8 +10,12 @@ import debugpy
 
 __all__ = [
     'SafeFromQuarantine',
-    'SelectSafeQuarantine'
+    'SelectSafeQuarantine',
+    'Return',
+    'CreateExemplaries',
+    'CreateExemplariesParameters',
     ]
+
 
 class SafeFromQuarantine(Wizard):
     'Safe from quarantine'
@@ -70,7 +74,76 @@ class SelectSafeQuarantine(ModelView):
     quarantines = fields.One2Many("library.localisation.quarantine", "choose_quarantine", "Quarantine to end")
 
 
-# Surcharge du wizard de remise des livres
+class Return(metaclass=PoolMeta):
+    __name__ = 'library.user.return'
 
-# Emprunt pour bloquer les livres dans la reserve
-# faisable avec domain
+    def transition_return_(self):
+        Checkout = Pool().get('library.user.checkout')
+        Quarantine = Pool().get('library.localisation.quarantine')
+        
+        Checkout.write(list(self.select_checkouts.checkouts), {
+                'return_date': self.select_checkouts.date})
+        
+        # Add the returned exemplary to the quarantine aera
+        to_create = []
+        for checkout in self.select_checkouts.checkouts:
+            quarantine = Quarantine()
+            quarantine.date = datetime.date.today()
+            quarantine.exemplary = checkout.exemplary
+            to_create.append(quarantine)
+        Quarantine.save(to_create)
+        
+        return 'end'
+
+
+class CreateExemplaries(metaclass=PoolMeta):
+    __name__ = 'library.book.create_exemplaries'
+
+    def default_parameters(self, name):
+        if Transaction().context.get('active_model', '') != 'library.book':
+            self.raise_user_error('invalid_model')
+        return {
+            'acquisition_date': datetime.date.today(),
+            'book': Transaction().context.get('active_id'),
+            'acquisition_price': 0,
+            'number_in_store': 0,
+            }
+
+    def transition_create_exemplaries(self):
+        if (self.parameters.acquisition_date and
+                self.parameters.acquisition_date > datetime.date.today()):
+            self.raise_user_error('invalid_date')
+        cursor = Transaction().connection.cursor()
+        
+        Exemplary = Pool().get('library.book.exemplary')
+        shelf = Pool().get('library.localisation.room.shelf').__table__()
+        
+        cursor.execute(*shelf.select(shelf.id,
+                where=shelf.is_store==True))
+        store_id = cursor.fetchone()[0]
+        
+        to_create = []
+        while len(to_create) < self.parameters.number_of_exemplaries:
+            exemplary = Exemplary()
+            exemplary.book = self.parameters.book
+            exemplary.acquisition_date = self.parameters.acquisition_date
+            exemplary.acquisition_price = self.parameters.acquisition_price
+            exemplary.identifier = self.parameters.identifier_start + str(
+                len(to_create) + 1)
+            if len(to_create) < self.parameters.number_in_store:
+                exemplary.shelf = store_id
+            else:
+                exemplary.shelf = self.parameters.shelf
+            to_create.append(exemplary)
+        Exemplary.save(to_create)
+        self.parameters.exemplaries = to_create
+        return 'open_exemplaries'
+
+
+class CreateExemplariesParameters(metaclass=PoolMeta):
+    __name__ = 'library.book.create_exemplaries.parameters'
+
+    shelf = fields.Many2One('library.localisation.room.shelf', 
+        "Shelf to put the exemplaries", "shelf", required=True)
+    number_in_store = fields.Integer("Number of exemplaries in the store", 
+        "The rest of the exemplaries will be put on the shelf you defined")

@@ -108,7 +108,7 @@ class Quarantine(ModelSQL, ModelView):
         required=True)
     
     date = fields.Date('Quarantine date', 'When was the book put on quarantine',
-        required=True)
+        required=True, domain=[("date", "<", datetime.date.today())])
     
     expected_out_quarantine = fields.Function(fields.Date("Expected return date",
             "7 days after the book was put in quarantine", readonly=True),
@@ -172,7 +172,7 @@ class Book(metaclass=PoolMeta):
 class Exemplary(metaclass=PoolMeta):
     __name__ = 'library.book.exemplary'
     
-    shelf = fields.Many2One('library.localisation.room.shelf', "shelf", "Shalf",
+    shelf = fields.Many2One('library.localisation.room.shelf', "shelf", "Shelf",
         required=True)
     
     is_available = fields.Function(fields.Boolean("Is availabe", "Is this exemplary available", readonly=True), "getter_is_available")
